@@ -1,0 +1,10 @@
+---
+- hosts: backup_servers
+  become: yes
+  roles:
+    - borg_server
+
+- hosts: clients
+  become: yes
+  roles:
+    - borg_client

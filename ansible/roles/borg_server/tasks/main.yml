@@ -1,0 +1,38 @@
+---
+- name: Install borgbackup on server
+  apt:
+    name: borgbackup
+    state: present
+    update_cache: yes
+
+- name: Create backup directory mount point /var/backup
+  file:
+    path: /var/backup
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+# В учебных целях симулируем отдельный раздел через bind mount или создание директории
+- name: Ensure backup user exists
+  user:
+    name: borg
+    shell: /bin/bash
+    home: /home/borg
+    create_home: yes
+
+- name: Set permissions on /var/backup for borg user
+  file:
+    path: /var/backup
+    owner: borg
+    group: borg
+    mode: '0770'
+    state: directory
+
+- name: Create .ssh directory for borg user
+  file:
+    path: /home/borg/.ssh
+    state: directory
+    owner: borg
+    group: borg
+    mode: '0700'
