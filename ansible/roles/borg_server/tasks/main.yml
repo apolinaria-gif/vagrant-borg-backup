@@ -13,7 +13,7 @@
     group: root
     mode: '0755'
 
-# В учебных целях симулируем отдельный раздел через bind mount или создание директории
+
 - name: Ensure backup user exists
   user:
     name: borg
