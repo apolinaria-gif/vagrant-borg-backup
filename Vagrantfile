@@ -8,7 +8,7 @@ Vagrant.configure("2") do |config|
       v.memory = 1024
       v.cpus = 1
     end
-    # Настройка сервера бэкапов
+    
     server.vm.provision "shell", inline: <<-SHELL
       apt-get update
       apt-get install -y borgbackup
@@ -29,19 +29,19 @@ Vagrant.configure("2") do |config|
       v.memory = 1024
       v.cpus = 1
     end
-    # Настройка клиента и автоматическая настройка беспарольного SSH-доступа по ключу
+    
     client.vm.provision "shell", inline: <<-SHELL
       apt-get update
       apt-get install -y borgbackup sshpass
 
-      # Генерация SSH-ключа для root, если его нет
+      
       [ -f /root/.ssh/id_rsa ] || ssh-keygen -t rsa -b 2048 -N "" -f /root/.ssh/id_rsa
 
-      # Автоматическое добавление ключа на сервер бэкапов (пароль пользователя borg по умолчанию 'vagrant')
+      
       export SSHPASS='vagrant'
       sshpass -e ssh-copy-id -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa.pub borg@192.168.56.10
 
-      # Создаем скрипт бэкапа с поддержкой BORG_RSH для обхода запроса хоста
+      
       cat << 'EOF' > /usr/local/bin/borg-backup.sh
 #!/bin/bash
 export BORG_REPO="borg@192.168.56.10:/var/backup/etc-repo"
@@ -77,7 +77,7 @@ EOF
 
       chmod +x /usr/local/bin/borg-backup.sh
 
-      # Создаем systemd service
+      
       cat << 'EOF' > /etc/systemd/system/borg-backup.service
 [Unit]
 Description=Borg Backup Service for /etc
@@ -88,7 +88,7 @@ Type=oneshot
 ExecStart=/usr/local/bin/borg-backup.sh
 EOF
 
-      # Создаем systemd timer (каждые 5 минут)
+      
       cat << 'EOF' > /etc/systemd/system/borg-backup.timer
 [Unit]
 Description=Run Borg Backup every 5 minutes
