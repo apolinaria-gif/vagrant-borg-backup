@@ -5,13 +5,13 @@ export BORG_PASSPHRASE="your_secure_password_here"
 
 TAG="borg-backup"
 
-# Инициализация репозитория, если он еще не создан
+
 if ! borg list :: >/dev/null 2>&1; then
     borg init --encryption=repokey-blake2 $BORG_REPO
     logger -t "$TAG" "Borg repository initialized."
 fi
 
-# Создание бэкапа с меткой времени в имени
+
 BACKUP_NAME="etc-backup-$(date +%Y-%m-%d_%H-%M-%S)"
 logger -t "$TAG" "Starting backup: $BACKUP_NAME"
 
@@ -23,9 +23,7 @@ else
     exit 1
 fi
 
-# Применение политики хранения (Prune):
-# - Последние 3 месяца: ежедневные копии (keep-daily 90)
-# - До 1 года: по одной копии на конец месяца (keep-monthly 12)
+
 logger -t "$TAG" "Starting prune process..."
 borg prune --list \
     --keep-daily=90 \
